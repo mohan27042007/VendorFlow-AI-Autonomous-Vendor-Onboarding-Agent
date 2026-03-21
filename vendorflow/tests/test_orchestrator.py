@@ -6,8 +6,9 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from core.document_vault import DocumentVault
-from core.orchestrator import run_single_portal, run_single_portal_with_retry
+from core.orchestrator import run_batch, run_single_portal, run_single_portal_with_retry
 from core.profile import load_profile
+from core.scoped_vault import get_scoped_data
 from core.tinyfish_client import TinyFishResult
 
 
@@ -114,3 +115,76 @@ async def test_no_retry_on_auth_error(profile, vault):
         )
     assert call_count == 1
     assert result.status == "failed"
+
+
+@pytest.mark.asyncio
+async def test_run_batch_two_portals(profile, vault):
+    """Mock run_single_portal_with_retry returns success for both → success_count == 2."""
+    with patch("core.orchestrator.run_single_portal_with_retry", new_callable=AsyncMock) as mock:
+        mock.return_value = _success_result().__dict__ | {
+            "run_id": "batch-test",
+            "portal_url": "https://example.com",
+            "portal_name": "Example",
+            "status": "submitted",
+            "retry_count": 0,
+            "last_error": None,
+        }
+        from db.models import PortalResult
+        mock.return_value = PortalResult(
+            run_id="batch-test",
+            portal_url="https://example.com",
+            portal_name="Example",
+            status="submitted",
+            reference_id="ABC123",
+            time_taken_seconds=5.0,
+        )
+        portals = [
+            {"url": "https://seller.example.com", "name": "Portal1"},
+            {"url": "https://seller2.example.com", "name": "Portal2"},
+        ]
+        result = await run_batch(portals, profile, vault)
+    assert result.success_count == 2
+    assert len(result.portal_results) == 2
+
+
+@pytest.mark.asyncio
+async def test_run_batch_partial_failure(profile, vault):
+    """First portal success, second portal failure → success_count=1, fail_count=1."""
+    call_count = 0
+
+    async def mock_retry(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        from db.models import PortalResult
+        if call_count == 1:
+            return PortalResult(
+                run_id="batch-test", portal_url="p1", portal_name="P1", status="submitted"
+            )
+        return PortalResult(
+            run_id="batch-test", portal_url="p2", portal_name="P2", status="failed", error_message="err"
+        )
+
+    with patch("core.orchestrator.run_single_portal_with_retry", side_effect=mock_retry):
+        portals = [
+            {"url": "https://p1.example.com", "name": "P1"},
+            {"url": "https://p2.example.com", "name": "P2"},
+        ]
+        result = await run_batch(portals, profile, vault)
+    assert result.success_count == 1
+    assert result.fail_count == 1
+
+
+def test_get_scoped_data_marketplace(profile, vault):
+    """IndiaMART URL → tan NOT in result, gstin IN result."""
+    scoped = get_scoped_data("https://seller.indiamart.com", profile, vault)
+    assert "tan" not in scoped
+    assert "gstin" in scoped
+    assert "pan" in scoped
+
+
+def test_get_scoped_data_government(profile, vault):
+    """gem.gov.in URL → tan IN result."""
+    scoped = get_scoped_data("https://mkp.gem.gov.in", profile, vault)
+    assert "tan" in scoped
+    assert "cin" in scoped
+    assert "gstin" in scoped

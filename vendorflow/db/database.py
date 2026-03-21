@@ -9,14 +9,16 @@ from db.models import PortalResult
 
 
 def _get_conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout=30000")
     return conn
 
 
 def init_db() -> None:
     """Create tables if they don't exist."""
     conn = _get_conn()
+    conn.execute("PRAGMA journal_mode=WAL")
     cur = conn.cursor()
 
     cur.execute("""
@@ -63,10 +65,10 @@ def init_db() -> None:
 
 
 def create_run(run_id: str, portal_count: int) -> None:
-    """Insert a new row into runs table."""
+    """Insert a new row into runs table. Idempotent — ignores if run_id exists."""
     conn = _get_conn()
     conn.execute(
-        "INSERT INTO runs (run_id, started_at, portal_count) VALUES (?, ?, ?)",
+        "INSERT OR IGNORE INTO runs (run_id, started_at, portal_count) VALUES (?, ?, ?)",
         (run_id, datetime.now(timezone.utc).isoformat(), portal_count),
     )
     conn.commit()
@@ -155,6 +157,23 @@ def get_blueprint_path(domain: str) -> str | None:
     if row:
         return row["blueprint_path"]
     return None
+
+
+def update_run_completed(
+    run_id: str,
+    success_count: int,
+    total_time_seconds: float,
+) -> None:
+    """Update runs table with completion data."""
+    conn = _get_conn()
+    conn.execute(
+        """UPDATE runs
+           SET completed_at = ?, success_count = ?, total_time_seconds = ?
+           WHERE run_id = ?""",
+        (datetime.now(timezone.utc).isoformat(), success_count, total_time_seconds, run_id),
+    )
+    conn.commit()
+    conn.close()
 
 
 init_db()
