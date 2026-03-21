@@ -176,4 +176,15 @@ def update_run_completed(
     conn.close()
 
 
+def get_portals_for_run(run_id: str) -> list[dict]:
+    """Return portal results for a specific run."""
+    conn = _get_conn()
+    rows = conn.execute(
+        "SELECT portal_name, portal_url, status, reference_id, time_taken_seconds, error_message, screenshot_dir, retry_count, last_error FROM portal_results WHERE run_id = ?",
+        (run_id,),
+    ).fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+
 init_db()

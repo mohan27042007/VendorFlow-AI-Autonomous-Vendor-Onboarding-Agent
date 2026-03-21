@@ -41,7 +41,8 @@ def _fail_result(error="something went wrong"):
 @pytest.mark.asyncio
 async def test_run_single_portal_success(profile, vault):
     """Mock run_agent returns success=True → status == submitted."""
-    with patch("core.orchestrator.tinyfish_client.run_agent", new_callable=AsyncMock) as mock:
+    with patch("core.orchestrator.save_blueprint"), \
+         patch("core.orchestrator.tinyfish_client.run_agent", new_callable=AsyncMock) as mock:
         mock.return_value = _success_result()
         result = await run_single_portal(
             portal_url="https://seller.example.com",
@@ -81,7 +82,8 @@ async def test_retry_on_failure(profile, vault):
             return _fail_result("temporary error")
         return _success_result()
 
-    with patch("core.orchestrator.tinyfish_client.run_agent", side_effect=mock_run_agent):
+    with patch("core.orchestrator.save_blueprint"), \
+         patch("core.orchestrator.tinyfish_client.run_agent", side_effect=mock_run_agent):
         result = await run_single_portal_with_retry(
             portal_url="https://seller.example.com",
             portal_name="Example",
