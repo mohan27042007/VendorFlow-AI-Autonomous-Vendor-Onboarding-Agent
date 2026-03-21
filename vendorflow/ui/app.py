@@ -1,0 +1,1 @@
+"""Streamlit entry point for VendorFlow AI."""

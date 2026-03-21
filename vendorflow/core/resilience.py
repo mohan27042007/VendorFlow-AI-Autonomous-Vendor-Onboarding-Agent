@@ -1,0 +1,1 @@
+"""Layout-change resilience mode — F12."""

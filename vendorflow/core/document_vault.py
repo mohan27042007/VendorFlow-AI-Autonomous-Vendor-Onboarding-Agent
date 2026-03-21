@@ -1,0 +1,1 @@
+"""Document vault — upload once, use everywhere — F2."""

@@ -1,0 +1,1 @@
+"""Replay page — time-lapse screenshot viewer."""

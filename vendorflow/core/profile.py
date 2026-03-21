@@ -1,0 +1,1 @@
+"""Company profile manager — F1."""
