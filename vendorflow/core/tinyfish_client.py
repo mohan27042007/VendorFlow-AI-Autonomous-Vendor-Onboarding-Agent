@@ -2,7 +2,9 @@
 
 import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 
 import httpx
 
@@ -17,6 +19,8 @@ class TinyFishResult:
     steps: list[dict] = field(default_factory=list)
     duration_seconds: float = 0.0
     error: str | None = None
+    streaming_url: str | None = None
+    progress_log: list[str] = field(default_factory=list)
 
 
 async def run_agent(
@@ -24,6 +28,8 @@ async def run_agent(
     goal: str,
     context_data: dict | None = None,
     files: list | None = None,
+    on_streaming_url: Callable[[str], None] | None = None,
+    on_progress: Callable[[str], None] | None = None,
 ) -> TinyFishResult:
     """Run a TinyFish web agent session and stream the SSE response."""
     start = time.monotonic()
@@ -66,7 +72,27 @@ async def run_agent(
 
                     event_type = event.get("type", "").upper()
 
-                    if event_type == "COMPLETE":
+                    if event_type == "STREAMING_URL":
+                        print(f"[FULL STREAMING EVENT]: {event}")
+                        streaming_url = event.get("streaming_url")
+                        if streaming_url:
+                            result.streaming_url = streaming_url
+                            print(f"[TinyFish] Live view: {streaming_url}")
+                            if on_streaming_url:
+                                on_streaming_url(streaming_url)
+                        result.steps.append(event)
+
+                    elif event_type == "PROGRESS":
+                        purpose = event.get("purpose", "")
+                        if purpose:
+                            timestamp = datetime.now().strftime("%H:%M:%S")
+                            entry = f"[{timestamp}] {purpose}"
+                            result.progress_log.append(entry)
+                            if on_progress:
+                                on_progress(purpose)
+                        result.steps.append(event)
+
+                    elif event_type == "COMPLETE":
                         result.success = True
                         result.result_text = str(event.get("result", ""))
                         result.steps.append(event)

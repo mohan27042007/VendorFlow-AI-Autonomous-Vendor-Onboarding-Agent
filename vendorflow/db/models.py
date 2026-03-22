@@ -15,6 +15,8 @@ class PortalResult:
     screenshot_dir: str | None = None
     retry_count: int = 0
     last_error: str | None = None
+    streaming_url: str | None = None
+    progress_log: list[str] = field(default_factory=list)
 
 
 @dataclass

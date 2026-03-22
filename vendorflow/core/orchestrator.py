@@ -6,6 +6,7 @@ import re
 import shutil
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -43,6 +44,13 @@ def save_screenshot(data: str, save_dir: str, index: int) -> str:
     return str(dest)
 
 
+_BLOCKED_WORDS = {
+    "your", "number", "id", "the", "this",
+    "that", "for", "our", "new", "ref",
+    "application", "registration", "submission",
+}
+
+
 def extract_reference_id(text: str) -> str | None:
     """Try to extract a reference/acknowledgement ID from result text."""
     patterns = [
@@ -52,7 +60,14 @@ def extract_reference_id(text: str) -> str | None:
     for pattern in patterns:
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
-            return match.group(1).strip()
+            candidate = match.group(1).strip()
+            if candidate.lower() in _BLOCKED_WORDS:
+                continue
+            if len(candidate) < 6:
+                continue
+            if not any(c.isdigit() for c in candidate):
+                continue
+            return candidate
     return None
 
 
@@ -62,6 +77,8 @@ async def run_single_portal(
     company_profile: CompanyProfile,
     document_vault: DocumentVault,
     run_id: str,
+    on_streaming_url: Callable[[str], None] | None = None,
+    on_progress: Callable[[str], None] | None = None,
 ) -> PortalResult:
     """Run a single portal onboarding end-to-end."""
     db.insert_portal_result(
@@ -84,7 +101,9 @@ async def run_single_portal(
     goal = build_resilient_goal(portal_url, base_goal, blueprint)
 
     result = await tinyfish_client.run_agent(
-        url=portal_url, goal=goal, context_data=context_data
+        url=portal_url, goal=goal, context_data=context_data,
+        on_streaming_url=on_streaming_url,
+        on_progress=on_progress,
     )
 
     screenshot_dir = f"{SCREENSHOTS_DIR}/{run_id}/{portal_name}"
@@ -128,6 +147,8 @@ async def run_single_portal(
         time_taken_seconds=result.duration_seconds,
         error_message=result.error,
         screenshot_dir=screenshot_dir if result.screenshots else None,
+        streaming_url=result.streaming_url,
+        progress_log=result.progress_log,
     )
 
 
@@ -138,6 +159,8 @@ async def run_single_portal_with_retry(
     document_vault: DocumentVault,
     run_id: str,
     max_retries: int | None = None,
+    on_streaming_url: Callable[[str], None] | None = None,
+    on_progress: Callable[[str], None] | None = None,
 ) -> PortalResult:
     """Run a single portal with exponential backoff retry (F8)."""
     retries = max_retries if max_retries is not None else MAX_RETRIES
@@ -154,6 +177,8 @@ async def run_single_portal_with_retry(
             company_profile=company_profile,
             document_vault=document_vault,
             run_id=run_id,
+            on_streaming_url=on_streaming_url,
+            on_progress=on_progress,
         )
         result.retry_count = attempt - 1
 
@@ -210,6 +235,8 @@ async def run_batch(
     portal_list: list[dict],
     profile: CompanyProfile,
     vault: DocumentVault,
+    on_streaming_url: Callable[[str], None] | None = None,
+    on_progress: Callable[[str], None] | None = None,
 ) -> BatchResult:
     """Run multiple portals in parallel with concurrency limit."""
     run_id = str(uuid.uuid4())
@@ -227,6 +254,8 @@ async def run_batch(
                 company_profile=profile,
                 document_vault=vault,
                 run_id=run_id,
+                on_streaming_url=on_streaming_url,
+                on_progress=on_progress,
             )
 
     tasks = [run_with_semaphore(p) for p in portal_list]

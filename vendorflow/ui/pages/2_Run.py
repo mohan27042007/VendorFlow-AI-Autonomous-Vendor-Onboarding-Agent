@@ -34,6 +34,26 @@ from ui.components.status_card import render_status_card
 
 inject_css(overlay_opacity="0.94")
 
+st.html("""
+<style>
+[data-testid="stExpander"] {
+    background: rgba(13,17,23,0.97) !important;
+    border: 1px solid #30363D !important;
+    border-radius: 8px !important;
+}
+[data-testid="stExpander"] details {
+    background: rgba(13,17,23,0.97) !important;
+}
+[data-testid="stExpanderToggleIcon"] {
+    color: #C9D1D9 !important;
+}
+.streamlit-expanderHeader {
+    background: rgba(13,17,23,0.97) !important;
+    color: #C9D1D9 !important;
+}
+</style>
+""")
+
 with st.sidebar:
     render_sidebar_nav()
 
@@ -167,6 +187,54 @@ if batch_result:
         </div>
     </div>
     """)
+
+    # ── Streaming URL Live Preview ──
+    streaming_url = None
+    if batch_result.portal_results:
+        for pr in batch_result.portal_results:
+            if hasattr(pr, 'streaming_url') and pr.streaming_url:
+                streaming_url = pr.streaming_url
+                break
+
+    if streaming_url:
+        st.html("""
+        <div style="display:flex;align-items:center;gap:10px;margin:1.5rem 0 1rem;
+             padding-bottom:0.75rem;border-bottom:1px solid #30363D;">
+            <span style="color:#F0F6FC;font-size:1rem;font-weight:600;">Agent Replay</span>
+            <span style="background:#21262D;color:#8B949E;font-size:0.7rem;font-weight:500;
+                  padding:2px 8px;border-radius:50px;text-transform:uppercase;
+                  letter-spacing:0.08em;">Live View</span>
+        </div>
+        """)
+        st.html(f"""
+        <div style="background:#161B22;border:1px solid #30363D;
+             border-top:3px solid #00B4A6;border-radius:12px;
+             padding:1rem;margin-bottom:1.5rem;">
+            <div style="color:#8B949E;font-size:0.75rem;text-transform:uppercase;
+                 letter-spacing:0.1em;margin-bottom:0.75rem;">
+                 TinyFish Agent — Live Browser Session
+            </div>
+            <iframe src="{streaming_url}" width="100%" height="500"
+                style="border:none;border-radius:8px;background:#0D1117;"
+                allow="accelerometer;camera;encrypted-media;fullscreen;geolocation;
+                       gyroscope;microphone;midi;payment;usb;xr-spatial-tracking"
+                sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock
+                         allow-popups allow-popups-to-escape-sandbox allow-presentation
+                         allow-same-origin allow-scripts">
+            </iframe>
+            <div style="margin-top:0.75rem;display:flex;align-items:center;
+                 justify-content:space-between;">
+                <span style="color:#6E7681;font-size:0.75rem;">
+                     If the preview is blank, the session may have expired. Run again to get a fresh view.
+                </span>
+                <a href="{streaming_url}" target="_blank"
+                   style="color:#00B4A6;font-size:0.75rem;font-weight:500;text-decoration:none;">
+                   Open in new tab →
+                </a>
+            </div>
+        </div>
+        """)
+
     for r in batch_result.portal_results:
         cols = st.columns([3, 1])
         with cols[0]:
@@ -177,6 +245,16 @@ if batch_result:
                     with st.spinner("Checking..."):
                         new_status = asyncio.run(check_portal_status(r))
                     st.info(f"Status: {new_status}")
+
+        if r.progress_log:
+            with st.expander(f"View agent activity log — {r.portal_name}"):
+                for msg in r.progress_log:
+                    st.html(f"""
+                    <div style="color:#C9D1D9;font-size:0.8rem;padding:4px 0;
+                         border-bottom:1px solid #21262D;font-family:'DM Mono',monospace;">
+                         → {msg}
+                    </div>
+                    """)
     try:
         pdf_path = generate_run_report(batch_result.run_id)
         with open(pdf_path, "rb") as f:
