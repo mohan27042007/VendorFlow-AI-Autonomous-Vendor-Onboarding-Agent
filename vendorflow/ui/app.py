@@ -49,20 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 """)
 with st.sidebar:
-    st.html("""
-    <div style="padding:0.5rem 0 1.5rem;">
-        <div style="font-size:1.1rem;font-weight:700;
-             color:#F0F6FC;letter-spacing:-0.01em;">
-             VendorFlow AI
-        </div>
-        <div style="font-size:0.75rem;color:#8B949E;
-             margin-top:2px;">
-             Vendor Onboarding Agent
-        </div>
-    </div>
-    <div style="height:1px;background:#21262D;
-         margin-bottom:1.5rem;"></div>
-    """)
     from ui.styles import render_sidebar_nav
     render_sidebar_nav()
     st.html('<div style="height:1px;background:#21262D;margin:1.5rem 0;"></div>')
