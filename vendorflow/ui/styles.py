@@ -262,10 +262,5 @@ def page_header(title: str, subtitle: str) -> str:
 
 
 def render_sidebar_nav():
-    """Render sidebar navigation with Home link for all pages."""
-    import streamlit as st
-    st.page_link("app.py", label="Home")
-    st.page_link("pages/1_Setup.py", label="Setup")
-    st.page_link("pages/2_Run.py", label="Run")
-    st.page_link("pages/3_Dashboard.py", label="Dashboard")
-    st.page_link("pages/4_Replay.py", label="Replay")
+    """Sidebar navigation is handled by st.navigation() in streamlit_app.py."""
+    pass
