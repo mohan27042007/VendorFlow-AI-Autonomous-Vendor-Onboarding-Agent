@@ -70,10 +70,6 @@ with st.sidebar:
     <div style="height:1px;background:#21262D;
          margin-bottom:1.5rem;"></div>
     """)
-    st.page_link("pages/1_Setup.py", label="Setup")
-    st.page_link("pages/2_Run.py", label="Run")
-    st.page_link("pages/3_Dashboard.py", label="Dashboard")
-    st.page_link("pages/4_Replay.py", label="Replay")
     st.html('<div style="height:1px;background:#21262D;margin:1.5rem 0;"></div>')
 
     if TINYFISH_API_KEY and TINYFISH_API_KEY != "your_api_key_here":
