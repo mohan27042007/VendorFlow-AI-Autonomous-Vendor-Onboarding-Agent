@@ -59,24 +59,21 @@ p, span, div, h1, h2, h3, h4, h5, h6, label, input, button, textarea {
 [data-testid="stSidebar"] > div {
     padding: 1.5rem 1rem !important;
 }
-/* Hide the collapse toggle button */
-button[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"],
-.stSidebarCollapsedControl,
-[data-testid="stSidebarCollapseButton"],
-button[data-testid="stSidebarCollapseButton"],
-button[title="Collapse sidebar"],
-button[aria-label="Collapse sidebar"],
-button[kind="header"][data-testid="collapsedControl"],
-[data-testid="stSidebar"] button[kind="header"],
-button[data-testid="collapseSidebarButton"] {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    width: 0 !important;
-    overflow: hidden !important;
-    position: absolute !important;
+
+/* Hide Sidebar Toggle Controls on Desktop (Make it permanent) */
+@media (min-width: 900px) {
+    /* ONLY hide the close chevron (inside the open sidebar). 
+       This makes the sidebar impenetrable and permanently open.
+       We specifically DO NOT hide the expand button, so users trapped 
+       in localstorage-collapsed states can still rescue themselves. */
+    [data-testid="stSidebar"] button[kind="header"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
 }
+
 /* Hide Streamlit auto-generated page nav */
 [data-testid="stSidebarNav"] { display: none !important; }
 
@@ -262,44 +259,33 @@ def page_header(title: str, subtitle: str) -> str:
 
 
 def render_sidebar_nav():
-    """Render sidebar navigation for all pages."""
+    """Render sidebar navigation for all pages using native Streamlit routing."""
     import streamlit as st
-    st.sidebar.markdown("""
-    <div style="padding: 0.5rem 0;">
-        <a href="/" target="_self"
-           style="display:block;padding:0.5rem 1rem;
-           color:#C9D1D9;text-decoration:none;
-           font-size:0.9rem;font-weight:500;
-           border-radius:6px;margin-bottom:4px;">
-           Home
-        </a>
-        <a href="/1_Setup" target="_self"
-           style="display:block;padding:0.5rem 1rem;
-           color:#C9D1D9;text-decoration:none;
-           font-size:0.9rem;font-weight:500;
-           border-radius:6px;margin-bottom:4px;">
-           Setup
-        </a>
-        <a href="/2_Run" target="_self"
-           style="display:block;padding:0.5rem 1rem;
-           color:#C9D1D9;text-decoration:none;
-           font-size:0.9rem;font-weight:500;
-           border-radius:6px;margin-bottom:4px;">
-           Run
-        </a>
-        <a href="/3_Dashboard" target="_self"
-           style="display:block;padding:0.5rem 1rem;
-           color:#C9D1D9;text-decoration:none;
-           font-size:0.9rem;font-weight:500;
-           border-radius:6px;margin-bottom:4px;">
-           Dashboard
-        </a>
-        <a href="/4_Replay" target="_self"
-           style="display:block;padding:0.5rem 1rem;
-           color:#C9D1D9;text-decoration:none;
-           font-size:0.9rem;font-weight:500;
-           border-radius:6px;margin-bottom:4px;">
-           Replay
-        </a>
+    import os
+    
+    st.html("""
+    <div style="padding:0.5rem 0 1.5rem;">
+        <h1 style="color:#E6EDF3;font-size:1.25rem;
+            font-weight:700;margin:0 0 0.25rem;
+            letter-spacing:-0.02em;">
+            VendorFlow <span style="color:#00B4A6;">AI</span>
+        </h1>
+        <p style="color:#8B949E;font-size:0.75rem;
+           margin:0;font-weight:500;">
+           Vendor Onboarding Agent
+        </p>
     </div>
-    """, unsafe_allow_html=True)
+    <div style="height:1px;background:#21262D;
+         margin-bottom:1.5rem;"></div>
+    """)
+    
+    # Resolve correct paths dynamically regardless of deployment working directory
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    app_path = os.path.join(base_dir, "app.py")
+    pages_dir = os.path.join(base_dir, "pages")
+    
+    st.page_link(app_path, label="Home")
+    st.page_link(os.path.join(pages_dir, "1_Setup.py"), label="Setup")
+    st.page_link(os.path.join(pages_dir, "2_Run.py"), label="Run")
+    st.page_link(os.path.join(pages_dir, "3_Dashboard.py"), label="Dashboard")
+    st.page_link(os.path.join(pages_dir, "4_Replay.py"), label="Replay")

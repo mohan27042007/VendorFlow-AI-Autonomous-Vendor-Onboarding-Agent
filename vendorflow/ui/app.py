@@ -63,6 +63,8 @@ with st.sidebar:
     <div style="height:1px;background:#21262D;
          margin-bottom:1.5rem;"></div>
     """)
+    from ui.styles import render_sidebar_nav
+    render_sidebar_nav()
     st.html('<div style="height:1px;background:#21262D;margin:1.5rem 0;"></div>')
 
     if TINYFISH_API_KEY and TINYFISH_API_KEY != "your_api_key_here":
