@@ -262,34 +262,44 @@ def page_header(title: str, subtitle: str) -> str:
 
 
 def render_sidebar_nav():
-    """Render sidebar navigation for local development (streamlit run ui/app.py)."""
+    """Render sidebar navigation for all pages."""
     import streamlit as st
-    st.html("""
-    <div style="display:flex;flex-direction:column;gap:4px;padding:0.5rem 0;">
-        <a href="./" target="_self"
-           style="color:#C9D1D9;text-decoration:none;padding:6px 10px;
-                  border-radius:6px;font-size:0.9rem;font-weight:500;">
-            Home
+    st.sidebar.markdown("""
+    <div style="padding: 0.5rem 0;">
+        <a href="/" target="_self"
+           style="display:block;padding:0.5rem 1rem;
+           color:#C9D1D9;text-decoration:none;
+           font-size:0.9rem;font-weight:500;
+           border-radius:6px;margin-bottom:4px;">
+           Home
         </a>
-        <a href="./Setup" target="_self"
-           style="color:#8B949E;text-decoration:none;padding:6px 10px;
-                  border-radius:6px;font-size:0.9rem;">
-            Setup
+        <a href="/1_Setup" target="_self"
+           style="display:block;padding:0.5rem 1rem;
+           color:#C9D1D9;text-decoration:none;
+           font-size:0.9rem;font-weight:500;
+           border-radius:6px;margin-bottom:4px;">
+           Setup
         </a>
-        <a href="./Run" target="_self"
-           style="color:#8B949E;text-decoration:none;padding:6px 10px;
-                  border-radius:6px;font-size:0.9rem;">
-            Run
+        <a href="/2_Run" target="_self"
+           style="display:block;padding:0.5rem 1rem;
+           color:#C9D1D9;text-decoration:none;
+           font-size:0.9rem;font-weight:500;
+           border-radius:6px;margin-bottom:4px;">
+           Run
         </a>
-        <a href="./Dashboard" target="_self"
-           style="color:#8B949E;text-decoration:none;padding:6px 10px;
-                  border-radius:6px;font-size:0.9rem;">
-            Dashboard
+        <a href="/3_Dashboard" target="_self"
+           style="display:block;padding:0.5rem 1rem;
+           color:#C9D1D9;text-decoration:none;
+           font-size:0.9rem;font-weight:500;
+           border-radius:6px;margin-bottom:4px;">
+           Dashboard
         </a>
-        <a href="./Replay" target="_self"
-           style="color:#8B949E;text-decoration:none;padding:6px 10px;
-                  border-radius:6px;font-size:0.9rem;">
-            Replay
+        <a href="/4_Replay" target="_self"
+           style="display:block;padding:0.5rem 1rem;
+           color:#C9D1D9;text-decoration:none;
+           font-size:0.9rem;font-weight:500;
+           border-radius:6px;margin-bottom:4px;">
+           Replay
         </a>
     </div>
-    """)
+    """, unsafe_allow_html=True)
