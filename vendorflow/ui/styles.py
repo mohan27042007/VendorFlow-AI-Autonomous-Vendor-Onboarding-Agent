@@ -262,5 +262,34 @@ def page_header(title: str, subtitle: str) -> str:
 
 
 def render_sidebar_nav():
-    """Sidebar navigation is handled by st.navigation() in streamlit_app.py."""
-    pass
+    """Render sidebar navigation for local development (streamlit run ui/app.py)."""
+    import streamlit as st
+    st.html("""
+    <div style="display:flex;flex-direction:column;gap:4px;padding:0.5rem 0;">
+        <a href="./" target="_self"
+           style="color:#C9D1D9;text-decoration:none;padding:6px 10px;
+                  border-radius:6px;font-size:0.9rem;font-weight:500;">
+            Home
+        </a>
+        <a href="./Setup" target="_self"
+           style="color:#8B949E;text-decoration:none;padding:6px 10px;
+                  border-radius:6px;font-size:0.9rem;">
+            Setup
+        </a>
+        <a href="./Run" target="_self"
+           style="color:#8B949E;text-decoration:none;padding:6px 10px;
+                  border-radius:6px;font-size:0.9rem;">
+            Run
+        </a>
+        <a href="./Dashboard" target="_self"
+           style="color:#8B949E;text-decoration:none;padding:6px 10px;
+                  border-radius:6px;font-size:0.9rem;">
+            Dashboard
+        </a>
+        <a href="./Replay" target="_self"
+           style="color:#8B949E;text-decoration:none;padding:6px 10px;
+                  border-radius:6px;font-size:0.9rem;">
+            Replay
+        </a>
+    </div>
+    """)
