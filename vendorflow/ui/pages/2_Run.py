@@ -4,7 +4,16 @@ import asyncio
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+_vendorflow_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _vendorflow_dir not in sys.path:
+    sys.path.insert(0, _vendorflow_dir)
+_path = os.path.abspath(__file__)
+for _ in range(5):
+    _path = os.path.dirname(_path)
+    if os.path.exists(os.path.join(_path, "config", "settings.py")):
+        if _path not in sys.path:
+            sys.path.insert(0, _path)
+        break
 
 import nest_asyncio
 nest_asyncio.apply()

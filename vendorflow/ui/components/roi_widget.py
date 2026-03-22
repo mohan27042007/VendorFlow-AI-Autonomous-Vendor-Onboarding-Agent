@@ -1,5 +1,12 @@
 """ROI metrics widget component."""
 
+import os
+import sys
+
+_vendorflow_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _vendorflow_dir not in sys.path:
+    sys.path.insert(0, _vendorflow_dir)
+
 import streamlit as st
 
 
