@@ -1,29 +1,27 @@
-# VendorFlow AI 🐟
-### Autonomous Vendor Onboarding Agent — TinyFish $2M Pre-Accelerator Hackathon 2026
+# VendorFlow AI
 
-> An agentic infrastructure layer that autonomously onboards B2B companies 
-> to vendor portals — navigating forms, uploading documents, and tracking 
-> approvals without any human involvement.
+**Autonomous Vendor Onboarding Agent**
 
-[![Demo Video](https://img.shields.io/badge/Demo-Watch%20Now-red)](YOUR_VIDEO_URL)
-[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-green)](YOUR_STREAMLIT_URL)
+Live App: https://vendorflow-ai0.streamlit.app  
+GitHub: https://github.com/mohan27042007/VendorFlow-AI-Autonomous-Vendor-Onboarding-Agent  
+Hackathon: TinyFish $2M Pre-Accelerator Hackathon 2026
+
+An agentic infrastructure layer that autonomously onboards B2B companies to vendor portals -- navigating forms, uploading documents, and tracking approvals without any human involvement.
+
+[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-green)](https://vendorflow-ai0.streamlit.app)
 [![Built with TinyFish](https://img.shields.io/badge/Powered%20by-TinyFish-blue)](https://tinyfish.ai)
 
 ---
 
-## 🎯 The Problem
+## The Problem
 
-Every B2B company onboards 50–200 vendors per year.  
-Each portal takes **2–4 hours of manual work** — filling multi-page forms,  
-uploading GST/PAN certificates, managing logins, tracking approvals.  
-That's **100–800 hours of wasted labor per year**, per company.
+Every B2B company onboards 50-200 vendors per year. Each portal takes **2-4 hours of manual work** -- filling multi-page forms, uploading GST/PAN certificates, managing logins, tracking approvals. That's **100-800 hours of wasted labor per year**, per company.
 
-Vendor portals have **no public API**. The only way to automate this  
-is with a real browser agent navigating live websites.
+Vendor portals have **no public API**. The only way to automate this is with a real browser agent navigating live websites.
 
 ---
 
-## ✅ The Solution
+## The Solution
 
 VendorFlow AI uses the **TinyFish Web Agent API** to:
 1. Navigate to each vendor portal in a real browser
@@ -34,48 +32,47 @@ VendorFlow AI uses the **TinyFish Web Agent API** to:
 
 ---
 
-## 🚀 Demo
-
-**Watch the agent onboard to 3 real portals in under 5 minutes:**  
-👉 [Demo Video](YOUR_VIDEO_URL)  
-👉 [Live App](YOUR_STREAMLIT_URL)
-
----
-
-## ⚡ Features
+## Features
 
 | Feature | Status |
 |---|---|
-| Preflight Compliance Scanner | ✅ Live |
-| Autonomous Portal Navigation (TinyFish) | ✅ Live |
-| Multi-Portal Parallel Execution | ✅ Live |
-| Portal Blueprint Learning | ✅ Live |
-| Layout-Change Resilience Mode | ✅ Live |
-| Time-Lapse Run Replay | ✅ Live |
-| ROI & Throughput Dashboard | ✅ Live |
-| "What If Manual?" Simulator | ✅ Live |
-| Scoped Data Vaults per Portal | ✅ Live |
-| PDF Report Generator | ✅ Live |
+| Preflight Compliance Scanner | Live |
+| Autonomous Portal Navigation (TinyFish) | Live |
+| Multi-Portal Parallel Execution | Live |
+| Portal Blueprint Learning | Live |
+| Layout-Change Resilience Mode | Live |
+| Time-Lapse Run Replay | Live |
+| ROI and Throughput Dashboard | Live |
+| "What If Manual?" Simulator | Live |
+| Scoped Data Vaults per Portal | Live |
+| PDF Report Generator | Live |
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
-- **Agent Runtime:** TinyFish Web Agent API
-- **Backend:** Python 3.11, httpx (async), asyncio, pydantic
-- **Document Handling:** PyMuPDF
-- **Frontend:** Streamlit
-- **Storage:** SQLite
-- **Reports:** FPDF2
+| Component | Technology |
+|---|---|
+| Language | Python 3.11+ |
+| Agent Runtime | TinyFish Web Agent API (SSE streaming) |
+| Frontend | Streamlit (4 pages) |
+| Database | SQLite (stdlib sqlite3) |
+| HTTP Client | httpx (async) |
+| Parallelism | asyncio + asyncio.gather() |
+| Validation | pydantic v2 |
+| PDF Handling | PyMuPDF (fitz) |
+| PDF Reports | FPDF2 |
+| Config | python-dotenv + PyYAML |
+| Testing | pytest |
 
 ---
 
-## 🏃 How to Run Locally
+## How to Run Locally
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/yourusername/vendorflow-ai
-cd vendorflow-ai
+git clone https://github.com/mohan27042007/VendorFlow-AI-Autonomous-Vendor-Onboarding-Agent
+cd VendorFlow-AI-Autonomous-Vendor-Onboarding-Agent/vendorflow
 ```
 
 ### 2. Install dependencies
@@ -95,149 +92,65 @@ streamlit run ui/app.py
 ```
 
 ### 5. Use the app
-1. Go to **Setup** → fill company profile → upload documents
-2. Click **Run Preflight** → confirm all green
-3. Go to **Run** → enter portal URLs → click Start Onboarding
+1. Go to **Setup** and fill in the company profile, then upload documents
+2. Click **Run Preflight** and confirm all checks pass
+3. Go to **Run**, enter portal URLs, and click Start Onboarding
 4. Watch the TinyFish agent navigate real portals live
-5. Go to **Dashboard** → see hours saved and ROI metrics
-6. Go to **Replay** → watch time-lapse of each agent run
+5. Go to **Dashboard** to see hours saved and ROI metrics
+6. Go to **Replay** to watch a time-lapse of each agent run
 
 ---
 
-## 📁 Project Structure
+## Project Structure
+
 ```
 vendorflow/
-├── config/          # Settings and policy config
-├── core/            # All backend logic
-│   ├── tinyfish_client.py
-│   ├── profile.py
-│   ├── document_vault.py
-│   ├── preflight.py
-│   ├── blueprint.py
-│   ├── orchestrator.py
-│   └── report_generator.py
-├── db/              # SQLite database layer
-├── ui/              # Streamlit pages
-│   └── pages/
-│       ├── 1_Setup.py
-│       ├── 2_Run.py
-│       ├── 3_Dashboard.py
-│       └── 4_Replay.py
-├── tests/           # Unit tests
-└── data/            # Runtime data (gitignored)
+  config/               Configuration and policy rules
+  core/                 All backend logic
+    tinyfish_client.py  TinyFish API wrapper
+    profile.py          Company profile schema
+    document_vault.py   Document upload and retrieval
+    preflight.py        Compliance scanner
+    blueprint.py        Portal blueprint save/load
+    orchestrator.py     Main async run coordinator
+    report_generator.py PDF report output
+  db/                   SQLite database layer
+  ui/                   Streamlit pages and components
+    pages/
+      1_Setup.py        Profile input and document upload
+      2_Run.py          Portal run configuration and live progress
+      3_Dashboard.py    ROI metrics and run history
+      4_Replay.py       Screenshot replay viewer
+  tests/                pytest test suite (23 tests)
+  data/                 Runtime data (gitignored)
 ```
 
 ---
 
-## 🌐 Demo Portals Tested
+## Demo Portals Tested
 
 - IndiaMART Seller Registration
-- TradeIndia Supplier Registration  
+- TradeIndia Supplier Registration
 - GeM Government e-Marketplace
 - Flipkart Seller Hub
 - Amazon Seller Central India
 
 ---
 
-## 📄 License
+## Testing
 
-MIT License — see LICENSE file
+```bash
+cd vendorflow
+python -m pytest tests/ -v
+```
+
+23 tests covering profile validation, TinyFish client mocking, orchestrator retry logic, preflight compliance checks, batch execution, and scoped data vaults.
 
 ---
 
-*Built for the TinyFish $2M Pre-Accelerator Hackathon 2026*  
-*Powered by [TinyFish Web Agent API](https://tinyfish.ai)*
-```
+## License
 
----
+MIT License -- see [LICENSE](LICENSE) for details.
 
-## .gitignore — Full File
-```
-# Environment
-.env
-*.env
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.egg-info/
-dist/
-build/
-.eggs/
-
-# Runtime data — never commit these
-data/uploads/
-data/screenshots/
-data/reports/
-data/blueprints/
-data/*.db
-
-# Virtual environment
-venv/
-env/
-.venv/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Streamlit
-.streamlit/secrets.toml
-
-# Test artifacts
-.pytest_cache/
-.coverage
-htmlcov/
-```
-
----
-
-## LICENSE — Use MIT (Simplest)
-
-Create a file called `LICENSE` with this content:
-```
-MIT License
-
-Copyright (c) 2026 [Your Name]
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject to 
-the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED.
-```
-
----
-
-## Final Repo Structure at Submission
-```
-vendorflow-ai/          ← GitHub repo root
-├── README.md           ← judges read this first
-├── LICENSE             ← MIT
-├── .gitignore          
-├── .env.example        ← template, no real keys
-├── requirements.txt    
-├── config/
-├── core/
-├── db/
-├── ui/
-├── tests/
-└── data/               ← empty folder, gitignored contents
-    └── .gitkeep        ← keeps the folder in git
+Built for the TinyFish $2M Pre-Accelerator Hackathon 2026  
+Powered by [TinyFish Web Agent API](https://tinyfish.ai)
